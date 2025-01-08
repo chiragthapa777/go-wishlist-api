@@ -5,13 +5,20 @@ import (
 	"log"
 	"strings"
 
+	"github.com/chiragthapa777/wishlist-api/model"
+	userService "github.com/chiragthapa777/wishlist-api/service/user"
 	"github.com/chiragthapa777/wishlist-api/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetUser() {
+func GetCurrentUserId(c *fiber.Ctx) uint {
+	return c.Locals("userId").(uint)
+}
 
+func GetCurrentUser(c *fiber.Ctx) (*model.User, error) {
+	userId := GetCurrentUserId(c)
+	return userService.FindUserById(userId, nil)
 }
 
 // ParseAndValidate parses the request body into the given struct and validates it using the provided validator.

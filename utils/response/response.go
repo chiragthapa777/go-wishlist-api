@@ -19,7 +19,6 @@ type PaginationMetaData struct {
 }
 
 func SendResponse(c *fiber.Ctx, params ResponseParam) error {
-	log.Println("===================")
 	if params.Status == 0 {
 		params.Status = 200
 	}

@@ -71,13 +71,18 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	return responseUtils.SendResponse(c, responseUtils.ResponseParam{
-		Message: "Registration successful!",
+		Message: "Login successful!",
 		Data:    map[string]any{"user": user, "expiryMinutes": expiryMinutes, "token": jwtToken},
 	})
 }
 
 func GetCurrentUser(c *fiber.Ctx) error {
+	user, err := requestUtils.GetCurrentUser(c)
+	if err != nil {
+		return responseUtils.SendErrorResponse(c, responseUtils.ResponseParam{Error: err, Status: 400})
+	}
 	return responseUtils.SendResponse(c, responseUtils.ResponseParam{
-		Message: "Hello from server",
+		Message: "Current user detail",
+		Data:    user,
 	})
 }

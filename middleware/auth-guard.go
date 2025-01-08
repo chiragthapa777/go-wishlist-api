@@ -1,21 +1,39 @@
 package middleware
 
 import (
+	"errors"
 	"log"
+	"strings"
 
+	authService "github.com/chiragthapa777/wishlist-api/service/auth"
+	responseUtils "github.com/chiragthapa777/wishlist-api/utils/response"
 	"github.com/gofiber/fiber/v2"
 )
 
 func AuthGuard() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		authHeader := c.Get("Authorization")
+		authorization := c.Get("Authorization")
+		if authorization == "" {
+			return responseUtils.SendErrorResponse(c, responseUtils.ResponseParam{Error: errors.New("not authorized"), Status: 401})
+		}
 
-		// Extract user ID from the token (mocked here; implement your own logic)
-		userID := "12345" // Replace this with actual extraction logic
+		stringArray := strings.Split(authorization, " ")
 
-		// Store the user ID in the context
-		c.Locals("userID", userID)
-		log.Println(authHeader)
+		if len(stringArray) < 2 {
+			return responseUtils.SendErrorResponse(c, responseUtils.ResponseParam{Error: errors.New("not authorized"), Status: 401})
+		}
+
+		jwtToken := stringArray[1]
+
+		payload, err := authService.ValidateJWT(jwtToken)
+		if err != nil || payload == nil {
+			log.Println("err", err.Error())
+			return responseUtils.SendErrorResponse(c, responseUtils.ResponseParam{Error: errors.New("not authorized"), Status: 401})
+		}
+
+		userID := payload.UserId
+
+		c.Locals("userId", userID)
 		return c.Next()
 	}
 }

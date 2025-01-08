@@ -56,3 +56,20 @@ func FindUserByEmail(email string, tx *gorm.DB) (*model.User, error) {
 
 	return &user, nil
 }
+func FindUserById(id uint, tx *gorm.DB) (*model.User, error) {
+	db := tx
+
+	if db == nil {
+		db = database.GetDatabase()
+	}
+
+	user := model.User{}
+
+	result := db.Where("id = ?", id).Take(&user)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &user, nil
+}

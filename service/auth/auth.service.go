@@ -69,9 +69,9 @@ func GetUserJwtToken(user *model.User) (string, int, error) {
 
 // ValidateJWT validates the JWT token and returns the decoded claims
 func ValidateJWT(tokenString string) (*Claims, error) {
-	secretKey := config.GetConfig().JwtSecret
+	secretKey := []byte(config.GetConfig().JwtSecret)
 	// Parse the token
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims((tokenString), &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		// Ensure that the signing method matches
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
